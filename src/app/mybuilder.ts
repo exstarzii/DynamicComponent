@@ -17,8 +17,21 @@ export class MyBuilder {
 
   ngAfterViewInit(){
     const constructor:any =AppModule.prototype.constructor
-    console.log(constructor.ɵmod.declarations);
-    this.CompName_to_Comp = constructor.ɵmod.declarations.reduce((acc:any, cur: any,) => {
+    let modules: any[] = []
+    function AddModule(module: any){
+      modules.push(module)
+      module.ɵmod.imports.forEach(AddModule)
+    }
+    AddModule(constructor)
+    console.log('all modules',modules);
+
+    let declarations: any[] = []
+    modules.forEach((module:any)=>{
+      declarations.push(...module.ɵmod.declarations)
+    })
+    console.log('all declarations',declarations);
+
+    this.CompName_to_Comp = declarations.reduce((acc:any, cur: any,) => {
         acc[cur.name] = cur;
         return acc;
       }, {});
